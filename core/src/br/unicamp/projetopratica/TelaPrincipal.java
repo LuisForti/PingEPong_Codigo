@@ -4,49 +4,56 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
 public class TelaPrincipal extends Game {
-    Screen telaAtual;
+    MenuPrincipal telaAtual;
     MyGdxGame jogo;
     int tempo = 0;
+    String estado;
 
     public TelaPrincipal ()
     {
         jogo = new MyGdxGame();
         telaAtual = new MenuPrincipal();
+        estado = "menu";
     }
 
-    public void trocarDeTela (Screen telaAtual)
+    public void trocarDeTela ()
     {
-        jogo.hide();
-        this.telaAtual.hide();
-        this.telaAtual = telaAtual;
+        telaAtual = new MenuPrincipal();
+        estado = "menu";
         setScreen(telaAtual);
+        telaAtual.show();
     }
 
     public void reiniciarJogo ()
     {
-        this.telaAtual.hide();
+        telaAtual.hide();
         jogo = new MyGdxGame();
         setScreen(jogo);
+        estado = "jogar";
     }
 
     @Override
     public void create() {
-        setScreen(jogo);
-        jogo.show();
+        setScreen(telaAtual);
+        telaAtual.show();
     }
 
     @Override
     public void render()
     {
-        if(jogo.estaVivo())
-        {
-            jogo.render(tempo);
+        if(estado == "menu") {
+            telaAtual.render(60);
+            if (telaAtual.qualOEstado() == "jogar") {
+                reiniciarJogo();
+            }
         }
-        else
+        else if(estado == "jogar")
         {
-            trocarDeTela(new MenuPrincipal());
-            telaAtual.render(tempo);
-            reiniciarJogo();
+            jogo.render(60);
+            if(!jogo.estaVivo())
+            {
+                trocarDeTela();
+            }
         }
     }
 }
