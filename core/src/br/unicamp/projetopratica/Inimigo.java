@@ -10,6 +10,7 @@ public class Inimigo {
     private byte tipoDeMovimento;
     private Texture foto;
     private Sprite spriteInimigo;
+    private byte velocidade = 5;
 
     public void setVida(byte vida)
     {
@@ -45,14 +46,15 @@ public class Inimigo {
         return spriteInimigo;
     }
 
-    public Inimigo(byte vida, String enderecoDaFoto, float X, float Y)
+    public Inimigo(byte vida, String enderecoDaFoto, int largura, int altura, float X, float Y)
     {
         this.vida = vida;
         this.tipoDeMovimento = vida;
         this.foto = new Texture(enderecoDaFoto);
-        this.spriteInimigo = new Sprite(foto);
+        this.spriteInimigo = new Sprite(foto, largura, altura);
         this.spriteInimigo.setX(X);
         this.spriteInimigo.setY(Y);
+        this.spriteInimigo.setScale(2);
         int qualDirecao = 0;
         if(X > 600)
         {
@@ -79,7 +81,7 @@ public class Inimigo {
         this.spriteInimigo.setRotation((float)(Math.random() * 90) + qualDirecao);
     }
 
-    public Inimigo movimentar(Sprite nave, LinkedList<Inimigo> inimigos)
+    public Inimigo movimentar(Sprite nave, LinkedList<Inimigo> inimigos, float largura, float altura)
     {
         switch (tipoDeMovimento)
         {
@@ -88,13 +90,13 @@ public class Inimigo {
         }
 
         for (Inimigo atual : inimigos) {
-            if(atual.getCoordenadaX() > 1800 || atual.getCoordenadaX() < -400)
+            if(atual.getCoordenadaX() > largura + 400 || atual.getCoordenadaX() < -1 * largura - 400)
             {
                 return atual;
             }
             else
             {
-                if(atual.getCoordenadaY() > 1000 || atual.getCoordenadaY() < -400)
+                if(atual.getCoordenadaY() > altura + 400 || atual.getCoordenadaY() < -1 * altura - 400)
                 {
                     return atual;
                 }
@@ -105,8 +107,8 @@ public class Inimigo {
 
     private void movimento1()
     {
-        float novoX = (float)(-5 * Math.sin(Math.toRadians(spriteInimigo.getRotation())));
-        float novoY = (float)(5 * Math.cos(Math.toRadians(spriteInimigo.getRotation())));
+        float novoX = (float)(-1 * velocidade * Math.sin(Math.toRadians(spriteInimigo.getRotation())));
+        float novoY = (float)(velocidade * Math.cos(Math.toRadians(spriteInimigo.getRotation())));
 
         spriteInimigo.setX(spriteInimigo.getX() + novoX);
         spriteInimigo.setY(spriteInimigo.getY() + novoY);
@@ -115,37 +117,37 @@ public class Inimigo {
     private void movimento2(Sprite nave, LinkedList<Inimigo> inimigos) {
         int rotacao = 0;
 
-        if (this.getCoordenadaX() - 25 > nave.getX()) {
-            this.setCoordenadaX(this.getCoordenadaX() - 3);
+        if (this.getCoordenadaX() - 50 > nave.getX()) {
+            this.setCoordenadaX(this.getCoordenadaX() - velocidade + 2);
             rotacao = 1;
         } else {
-            if (this.getCoordenadaX() + 25 < nave.getX()) {
-                this.setCoordenadaX(this.getCoordenadaX() + 3);
+            if (this.getCoordenadaX() + 50 < nave.getX()) {
+                this.setCoordenadaX(this.getCoordenadaX() + velocidade - 2);
                 rotacao = 2;
             }
         }
-        if (this.getCoordenadaY() - 25 > nave.getY()) {
-            this.setCoordenadaY(this.getCoordenadaY() - 3);
+        if (this.getCoordenadaY() - 50 > nave.getY()) {
+            this.setCoordenadaY(this.getCoordenadaY() - velocidade + 2);
             if (rotacao == 0) {
                 rotacao = 3;
             } else if (rotacao == 1) {
                 rotacao = 4;
-                this.setCoordenadaX(this.getCoordenadaX() + 1);
+                this.setCoordenadaX(this.getCoordenadaX() + 2);
             } else {
                 rotacao = 5;
-                this.setCoordenadaX(this.getCoordenadaX() - 1);
+                this.setCoordenadaX(this.getCoordenadaX() - 2);
             }
         } else {
-            if (this.getCoordenadaY() + 25 < nave.getY()) {
-                this.setCoordenadaY(this.getCoordenadaY() + 3);
+            if (this.getCoordenadaY() + 50 < nave.getY()) {
+                this.setCoordenadaY(this.getCoordenadaY() + velocidade - 2);
                 if (rotacao == 0) {
                     rotacao = 6;
                 } else if (rotacao == 1) {
                     rotacao = 7;
-                    this.setCoordenadaX(this.getCoordenadaX() + 1);
+                    this.setCoordenadaX(this.getCoordenadaX() + 2);
                 } else {
                     rotacao = 8;
-                    this.setCoordenadaX(this.getCoordenadaX() - 1);
+                    this.setCoordenadaX(this.getCoordenadaX() - 2);
                 }
             }
         }

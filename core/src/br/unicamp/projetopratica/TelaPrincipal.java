@@ -1,6 +1,7 @@
 package br.unicamp.projetopratica;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
 public class TelaPrincipal extends Game {
@@ -8,12 +9,10 @@ public class TelaPrincipal extends Game {
     MyGdxGame jogo;
     int tempo = 0;
     String estado;
+    float largura, altura;
 
     public TelaPrincipal ()
     {
-        jogo = new MyGdxGame();
-        telaAtual = new MenuPrincipal();
-        estado = "menu";
     }
 
     public void trocarDeTela ()
@@ -28,12 +27,19 @@ public class TelaPrincipal extends Game {
     {
         telaAtual.hide();
         jogo = new MyGdxGame();
+        jogo.setTamanhoDaTela(largura, altura);
         setScreen(jogo);
         estado = "jogar";
     }
 
     @Override
     public void create() {
+        largura = Gdx.app.getGraphics().getWidth();
+        altura = Gdx.graphics.getHeight();
+        jogo = new MyGdxGame();
+        jogo.setTamanhoDaTela(largura, altura);
+        telaAtual = new MenuPrincipal();
+        estado = "menu";
         setScreen(telaAtual);
         telaAtual.show();
     }
