@@ -11,6 +11,7 @@ public class Inimigo {
     private Texture foto;
     private Sprite spriteInimigo;
     private byte velocidade = 5;
+    private boolean estaColado = false;
 
     public void setVida(byte vida)
     {
@@ -56,48 +57,57 @@ public class Inimigo {
         this.spriteInimigo.setY(Y);
         this.spriteInimigo.setScale(2);
         int qualDirecao = 0;
-        if(X > 600)
-        {
-            if(Y > 400)
-            {
-                qualDirecao = 90;
+        if(vida < 3) {
+            if (X > 600) {
+                if (Y > 400) {
+                    qualDirecao = 90;
+                } else {
+                    qualDirecao = 0;
+                }
+            } else {
+                if (Y > 400) {
+                    qualDirecao = 180;
+                } else {
+                    qualDirecao = 270;
+                }
             }
-            else
-            {
-                qualDirecao = 0;
-            }
+            this.spriteInimigo.setRotation((float) (Math.random() * 90) + qualDirecao);
         }
         else
         {
-            if(Y > 400)
+            if(X < 0)
             {
-                qualDirecao = 180;
+                this.spriteInimigo.setRotation(270);
             }
             else
             {
-                qualDirecao = 270;
+                this.spriteInimigo.setRotation(90);
             }
         }
-        this.spriteInimigo.setRotation((float)(Math.random() * 90) + qualDirecao);
     }
 
-    public Inimigo movimentar(Sprite nave, LinkedList<Inimigo> inimigos, float largura, float altura)
-    {
-        switch (tipoDeMovimento)
-        {
-            case 1: movimento1(); break;
-            case 2: movimento2(nave, inimigos); break;
+    public Inimigo movimentar(Sprite nave, LinkedList<Inimigo> inimigos, float largura, float altura) {
+        if (!estaColado) {
+            switch (tipoDeMovimento) {
+                case 1:
+                    movimento1();
+                    break;
+                case 2:
+                    movimento2(nave, inimigos);
+                    break;
+                case 3:
+                    movimento3(inimigos);
+                    break;
+                default:
+                    break;
+            }
         }
 
         for (Inimigo atual : inimigos) {
-            if(atual.getCoordenadaX() > largura + 400 || atual.getCoordenadaX() < -1 * largura - 400)
-            {
+            if (atual.getCoordenadaX() > largura + 400 || atual.getCoordenadaX() < -1 * largura - 400) {
                 return atual;
-            }
-            else
-            {
-                if(atual.getCoordenadaY() > altura + 400 || atual.getCoordenadaY() < -1 * altura - 400)
-                {
+            } else {
+                if (atual.getCoordenadaY() > altura + 400 || atual.getCoordenadaY() < -1 * altura - 400) {
                     return atual;
                 }
             }
@@ -184,12 +194,36 @@ public class Inimigo {
         verificarColisaoDaNave(inimigos);
     }
 
+    private void movimento3(LinkedList<Inimigo> inimigos)
+    {
+        for (Inimigo atual : inimigos) {
+            if(atual != this) {
+                if (this.spriteInimigo.getBoundingRectangle().overlaps(atual.spriteInimigo.getBoundingRectangle())) {
+                    atual.estaColado = true;
+                    if (this.spriteInimigo.getRotation() == 90) {
+                        atual.spriteInimigo.setX(atual.spriteInimigo.getX() - velocidade / 2);
+                    } else {
+                        atual.spriteInimigo.setX(atual.spriteInimigo.getX() + velocidade / 2);
+                    }
+                }
+            }
+        }
+        if(this.spriteInimigo.getRotation() == 90)
+        {
+            this.spriteInimigo.setX(this.spriteInimigo.getX() - velocidade / 2);
+        }
+        else
+        {
+            this.spriteInimigo.setX(this.spriteInimigo.getX() + velocidade / 2);
+        }
+    }
+
     private void verificarColisaoDaNave(LinkedList<Inimigo> inimigos)
     {
         for (Inimigo atual2 : inimigos) {
             if(this != atual2)
             {
-                if(atual2.getVida() > 1) {
+                if(atual2.getVida() == 2) {
                     if (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
                         while (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
                             if (this.getCoordenadaX() > atual2.getCoordenadaX() - 25) {

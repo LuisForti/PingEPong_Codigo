@@ -55,16 +55,15 @@ public class MyGdxGame implements Screen {
 
 	//Tempo e invocação
 	private double frame = 1499.5;
-	private int quantosInvocarTotal = 101;
-	private int quantosInvocar = 100;
+	private int quantosInvocarTotal = 12;
+	private int quantosInvocar = 10;
 	private int quantosInvocar2 = 1;
-	private int quantosInvocar3 = 0;
+	private int quantosInvocar3 = 1;
 	private int quantosInvocouTotal = 0;
 	private int quantosInvocou = 0;
 	private int quantosInvocou2 = 0;
 	private int quantosInvocou3 = 0;
 	private double tempoDesdeAUltimaHorda = 1500.5;
-	private double tempoDesdeAUltimaHorda2 = 1500.5;
 	private int qualHorda = 1;
 
 	//Pontuação
@@ -156,9 +155,7 @@ public class MyGdxGame implements Screen {
 				}
 			}
 		}
-		System.out.println("estimativa" + (tempoDesdeAUltimaHorda2 + ((300 / quantosInvocar2) * (quantosInvocou2))));
-		System.out.println("atual: " + frame);
-		if (frame == (tempoDesdeAUltimaHorda2 + ((300 / quantosInvocar2) * (quantosInvocou2)))) {
+		if (frame == (tempoDesdeAUltimaHorda + ((300 / quantosInvocar2) * (quantosInvocou2)))) {
 			quantosInvocouTotal++;
 			quantosInvocou2++;
 			if (quantosInvocou2 % 4 == 0) {
@@ -171,6 +168,16 @@ public class MyGdxGame implements Screen {
 				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50,quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
 			}
 		}
+		if (frame == (tempoDesdeAUltimaHorda + ((300 / quantosInvocar3) * (quantosInvocou3)))) {
+			quantosInvocouTotal++;
+			quantosInvocou3++;
+			if (quantosInvocou3 % 2 == 0) {
+				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75,-1, altura / 2));
+			}
+			else {
+				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
+			}
+		}
 		if (frame % 300 == 0) {
 			quantosInvocar += 5;
 			while (quantosInvocar > (30 * (frame / 1500))) {
@@ -181,14 +188,12 @@ public class MyGdxGame implements Screen {
 				quantosInvocar2 -= 5;
 				quantosInvocar3++;
 			}
-			quantosInvocarTotal = quantosInvocar + quantosInvocar2;
+			quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
 			quantosInvocarTotal = 0;
 			quantosInvocou = 0;
 			quantosInvocou2 = 0;
 			quantosInvocou3 = 0;
 			tempoDesdeAUltimaHorda = (int) frame + 0.5;
-			tempoDesdeAUltimaHorda2 = (int) frame + 0.5;
-			System.out.println("novo" + tempoDesdeAUltimaHorda2);
 			qualHorda++;
 		}
 		if (estaVivo) {
