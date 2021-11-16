@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,14 +24,17 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.awt.Menu;
 
 public class MenuPrincipal implements Screen {
+    private SpriteBatch batch;
     private String estado;
     private Drawable fotoJogar;
     private ImageButton btnJogar;
     private ImageButton btnTeste1;
     private Stage palco;
+    private Explosao teste;
 
     @Override
     public void show() {
+        batch = new SpriteBatch();
         fotoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
         btnJogar = new ImageButton(fotoJogar);
         btnJogar.setPosition(600, 300);

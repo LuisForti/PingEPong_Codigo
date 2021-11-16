@@ -65,6 +65,7 @@ public class MyGdxGame implements Screen {
 	private int quantosInvocou3 = 0;
 	private double tempoDesdeAUltimaHorda = 1500.5;
 	private int qualHorda = 1;
+	private LinkedList<Explosao> explosoes;
 
 	//Pausar
 	private Drawable fotoPausar;
@@ -108,6 +109,7 @@ public class MyGdxGame implements Screen {
 
 	public void iniciar(){
 		inimigos = new LinkedList<>();
+		explosoes = new LinkedList<>();
 		//Create block sprite
 		blockTexture = new Texture(Gdx.files.internal("nave.png"));
 		blockSprite = new Sprite(blockTexture, 0, 0, 50, 50);
@@ -341,11 +343,27 @@ public class MyGdxGame implements Screen {
 				}
 
 				if (posicaoARemover != -1) {
+					explosoes.add(new Explosao(inimigos.get(posicaoARemover).getCoordenadaX(), inimigos.get(posicaoARemover).getCoordenadaY()));
 					inimigos.remove(posicaoARemover);
 				}
 
 				if (objetoForaDoMapa != null) {
 					inimigos.remove(objetoForaDoMapa);
+				}
+
+				posicaoAtual = -1;
+				posicaoARemover = -1;
+				for(Explosao atual: explosoes)
+				{
+					posicaoAtual++;
+					if(!atual.animar(batch))
+					{
+						posicaoARemover = posicaoAtual;
+					}
+				}
+
+				if (posicaoARemover != -1) {
+					explosoes.remove(posicaoARemover);
 				}
 
 				stage.act(Gdx.graphics.getDeltaTime());
