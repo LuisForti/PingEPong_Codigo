@@ -1,10 +1,7 @@
 package br.unicamp.projetopratica;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,16 +9,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
-
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 public class MyGdxGame implements Screen {
 	//Componentes para os touchpads e a nave principal
@@ -51,7 +51,7 @@ public class MyGdxGame implements Screen {
 	private float posicaoAntigaY = 0;
 	private LinkedList<Inimigo> inimigos;
 	private int rotacao;
-	private boolean estaVivo = true;
+	private String estado = "vivo";
 
 	//Tempo e invocação
 	private double frame = 1499.5;
@@ -66,10 +66,17 @@ public class MyGdxGame implements Screen {
 	private double tempoDesdeAUltimaHorda = 1500.5;
 	private int qualHorda = 1;
 
+	//Pausar
+	private Drawable fotoPausar;
+	private ImageButton btnPausar;
+	private int tempoDeEspera = 0;
+	private BitmapFont contagem;
+
+
 	//Pontuação
 	private int score;
-	private String yourScoreName;
-	private BitmapFont yourBitmapFontName;
+	private String pontuacao;
+	private BitmapFont scoreboard;
 
 	//Tamanho da tela
 	private float largura;
@@ -89,7 +96,18 @@ public class MyGdxGame implements Screen {
 		camera.setToOrtho(false, 10f*largura / altura, 10f);
 
 		criarJoystics();
+		criarPause();
 
+		blockSpeed = 10;
+
+		score = 0;
+		pontuacao = "score: 0";
+		scoreboard = new BitmapFont();
+		contagem = new BitmapFont();
+	}
+
+	public void iniciar(){
+		inimigos = new LinkedList<>();
 		//Create block sprite
 		blockTexture = new Texture(Gdx.files.internal("nave.png"));
 		blockSprite = new Sprite(blockTexture, 0, 0, 50, 50);
@@ -102,14 +120,6 @@ public class MyGdxGame implements Screen {
 		//Set position to centre of the screen
 		tiro.setPosition(blockSprite.getX() + 300, blockSprite.getY());
 		tiro.setScale(2);
-
-		inimigos = new LinkedList<>();
-
-		blockSpeed = 10;
-
-		score = 0;
-		yourScoreName = "score: 0";
-		yourBitmapFontName = new BitmapFont();
 	}
 
 	@Override
@@ -124,7 +134,8 @@ public class MyGdxGame implements Screen {
 
 	@Override
 	public void resume() {
-
+		estado = "vivo";
+		tempoDeEspera = 6;
 	}
 
 	@Override
@@ -139,213 +150,229 @@ public class MyGdxGame implements Screen {
 
 	@Override
 	public void render(float delta) {
-		frame += 0.5;
-		if(quantosInvocou < quantosInvocar) {
-			if (frame == (tempoDesdeAUltimaHorda + ((150 / quantosInvocar) * (quantosInvocou)))) {
-				quantosInvocouTotal++;
-				quantosInvocou++;
-				if (quantosInvocou % 4 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
-				} else if (quantosInvocou % 3 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
-				} else if (quantosInvocou % 2 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
-				} else {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
-				}
-			}
-		}
-		if (frame == (tempoDesdeAUltimaHorda + ((300 / quantosInvocar2) * (quantosInvocou2)))) {
-			quantosInvocouTotal++;
-			quantosInvocou2++;
-			if (quantosInvocou2 % 4 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50,(float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
-			} else if (quantosInvocou2 % 3 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50,(float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
-			} else if (quantosInvocou2 % 2 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50,quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
-			} else {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50,quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
-			}
-		}
-		if (frame == (tempoDesdeAUltimaHorda + ((300 / quantosInvocar3) * (quantosInvocou3)))) {
-			quantosInvocouTotal++;
-			quantosInvocou3++;
-			if (quantosInvocou3 % 2 == 0) {
-				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75,-1, altura / 2));
-			}
-			else {
-				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
-			}
-		}
-		if (frame % 300 == 0) {
-			quantosInvocar += 5;
-			while (quantosInvocar > (30 * (frame / 1500))) {
-				quantosInvocar2++;
-				quantosInvocar -= 20;
-			}
-			while (quantosInvocar2 > 10 * (frame / 1500)) {
-				quantosInvocar2 -= 5;
-				quantosInvocar3++;
-			}
-			quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
-			quantosInvocarTotal = 0;
-			quantosInvocou = 0;
-			quantosInvocou2 = 0;
-			quantosInvocou3 = 0;
-			tempoDesdeAUltimaHorda = (int) frame + 0.5;
-			qualHorda++;
-		}
-		if (estaVivo) {
-			Gdx.gl.glClearColor(0, 0, 0, 1);
-			Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
-			camera.update();
-
-			batch.begin();
-			yourBitmapFontName.setColor(1, 1, 1, 1);
-			yourBitmapFontName.getData().setScale(5);
-			yourBitmapFontName.draw(batch, yourScoreName, 50, altura - 10);
-			blockSprite.draw(batch);
-			tiro.draw(batch);
-			batch.end();
-
-			blockSprite.setX(blockSprite.getX() + touchpad.getKnobPercentX() * (blockSpeed - 2));
-			blockSprite.setY(blockSprite.getY() + touchpad.getKnobPercentY() * (blockSpeed - 2));
-
-			if (touchpad.getKnobPercentX() != 0) {
-				if (touchpad.getKnobPercentY() < 0) {
-					blockSprite.setRotation((touchpad.getKnobPercentX() * 90) + 180);
-				} else {
-					blockSprite.setRotation(touchpad.getKnobPercentX() * -90);
-				}
-			}
-
-			tiro.setX(tiro.getX() + touchpad2.getKnobPercentX() * blockSpeed);
-			tiro.setY(tiro.getY() + touchpad2.getKnobPercentY() * blockSpeed);
-
-			if (touchpad2.getKnobPercentX() != 0) {
-				if (touchpad2.getKnobPercentY() < 0) {
-					tiro.setRotation((touchpad2.getKnobPercentX() * 90) + 180);
-				} else {
-					tiro.setRotation(touchpad2.getKnobPercentX() * -90);
-				}
-			}
-
-			if (tiro.getBoundingRectangle().overlaps(blockSprite.getBoundingRectangle())) {
-				repulsao = 15;
-			}
-			if (repulsao > 0) {
-				repulsao--;
-
-				if (tiro.getX() - 50 > blockSprite.getX()) {
-					tiro.setX(tiro.getX() + 3 * repulsao);
-					blockSprite.setX(blockSprite.getX() - 1 * repulsao);
-				} else {
-					if (tiro.getX() + 50 < blockSprite.getX()) {
-						tiro.setX(tiro.getX() - 3 * repulsao);
-						blockSprite.setX(blockSprite.getX() + 1 * repulsao);
+			if (estado == "vivo") {
+				frame += 0.5;
+				if (quantosInvocou < quantosInvocar) {
+					if (frame == (tempoDesdeAUltimaHorda + ((150 / quantosInvocar) * (quantosInvocou)))) {
+						quantosInvocouTotal++;
+						quantosInvocou++;
+						if (quantosInvocou % 4 == 0) {
+							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
+						} else if (quantosInvocou % 3 == 0) {
+							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
+						} else if (quantosInvocou % 2 == 0) {
+							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
+						} else {
+							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
+						}
 					}
 				}
-				if (tiro.getY() - 50 > blockSprite.getY()) {
-					tiro.setY(tiro.getY() + 3 * repulsao);
-					blockSprite.setY(blockSprite.getY() - 1 * repulsao);
-				} else {
-					if (tiro.getY() + 50 < blockSprite.getY()) {
-						tiro.setY(tiro.getY() - 3 * repulsao);
-						blockSprite.setY(blockSprite.getY() + 1 * repulsao);
+				if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar2) * (quantosInvocou2)))) {
+					quantosInvocouTotal++;
+					quantosInvocou2++;
+					if (quantosInvocou2 % 4 == 0) {
+						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
+					} else if (quantosInvocou2 % 3 == 0) {
+						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
+					} else if (quantosInvocou2 % 2 == 0) {
+						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
+					} else {
+						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
 					}
 				}
-			}
-			if (repulsao2 != 0) {
-				repulsao2--;
-
-				if (tiro.getX() - 50 > posicaoAntigaX) {
-					tiro.setX(tiro.getX() + 2 * repulsao2);
-				} else {
-					if (tiro.getX() + 50 < posicaoAntigaX) {
-						tiro.setX(tiro.getX() - 2 * repulsao2);
+				if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar3) * (quantosInvocou3)))) {
+					quantosInvocouTotal++;
+					quantosInvocou3++;
+					if (quantosInvocou3 % 2 == 0) {
+						inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
+					} else {
+						inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
 					}
 				}
-				if (tiro.getY() - 50 > posicaoAntigaY) {
-					tiro.setY(tiro.getY() + 2 * repulsao2);
-				} else {
-					if (tiro.getY() + 50 < posicaoAntigaY) {
-						tiro.setY(tiro.getY() - 2 * repulsao2);
+				if (frame % 300 == 0) {
+					quantosInvocar += 6;
+					while (quantosInvocar > (30 * (int) (frame / 1500))) {
+						quantosInvocar2++;
+						quantosInvocar -= 15;
+					}
+					while (quantosInvocar2 > 7 * (int) (frame / 1500)) {
+						quantosInvocar2 -= 5;
+						quantosInvocar3++;
+					}
+					quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
+					quantosInvocouTotal = 0;
+					quantosInvocou = 0;
+					quantosInvocou2 = 0;
+					quantosInvocou3 = 0;
+					tempoDesdeAUltimaHorda = (int) frame + 0.5;
+					qualHorda++;
+				}
+				Gdx.gl.glClearColor(0, 0, 0, 1);
+				Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+				camera.update();
+
+				batch.begin();
+				scoreboard.setColor(1, 1, 1, 1);
+				scoreboard.getData().setScale(5);
+				scoreboard.draw(batch, pontuacao, 50, altura - 10);
+				blockSprite.draw(batch);
+				tiro.draw(batch);
+				batch.end();
+
+				blockSprite.setX(blockSprite.getX() + touchpad.getKnobPercentX() * (blockSpeed - 2));
+				blockSprite.setY(blockSprite.getY() + touchpad.getKnobPercentY() * (blockSpeed - 2));
+
+				if (touchpad.getKnobPercentX() != 0) {
+					if (touchpad.getKnobPercentY() < 0) {
+						blockSprite.setRotation((touchpad.getKnobPercentX() * 90) + 180);
+					} else {
+						blockSprite.setRotation(touchpad.getKnobPercentX() * -90);
 					}
 				}
-			}
 
-			if (blockSprite.getX() > largura - 100) {
-				blockSprite.setX(largura - 100);
-			}
-			if (blockSprite.getX() < 10) {
-				blockSprite.setX(10);
-			}
-			if (blockSprite.getY() > altura - 100) {
-				blockSprite.setY(altura - 100);
-			}
-			if (blockSprite.getY() < 50) {
-				blockSprite.setY(50);
-			}
-			if (tiro.getX() > largura - 100) {
-				tiro.setX(largura - 100);
-			}
-			if (tiro.getX() < 10) {
-				tiro.setX(10);
-			}
-			if (tiro.getY() > altura - 100) {
-				tiro.setY(altura - 100);
-			}
-			if (tiro.getY() < 50) {
-				tiro.setY(50);
-			}
+				tiro.setX(tiro.getX() + touchpad2.getKnobPercentX() * blockSpeed);
+				tiro.setY(tiro.getY() + touchpad2.getKnobPercentY() * blockSpeed);
 
-			int posicaoAtual = 0;
-			int posicaoARemover = -1;
-			Inimigo objetoForaDoMapa = null;
-
-			for (Inimigo atual : inimigos) {
-				if (blockSprite.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
-					estaVivo = false;
-					break;
-				}
-				if (tiro.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
-					atual.setVida((byte) (atual.getVida() - 1));
-					if (atual.getVida() <= 0) {
-						posicaoARemover = posicaoAtual;
-						score += qualHorda * 10 * atual.getVidaInicial();
-						yourScoreName = "score: " + score;
+				if (touchpad2.getKnobPercentX() != 0) {
+					if (touchpad2.getKnobPercentY() < 0) {
+						tiro.setRotation((touchpad2.getKnobPercentX() * 90) + 180);
+					} else {
+						tiro.setRotation(touchpad2.getKnobPercentX() * -90);
 					}
-					posicaoAntigaX = atual.getCoordenadaX();
-					posicaoAntigaY = atual.getCoordenadaY();
-					repulsao2 = 14;
 				}
-				if (atual.getVida() > 0) {
-					objetoForaDoMapa = atual.movimentar(blockSprite, inimigos, largura, altura);
-					posicaoAtual++;
 
-					batch.begin();
-					atual.getSpriteInimigo().draw(batch);
-					batch.end();
+				if (tiro.getBoundingRectangle().overlaps(blockSprite.getBoundingRectangle())) {
+					repulsao = 15;
+				}
+				if (repulsao > 0) {
+					repulsao--;
+
+					if (tiro.getX() - 50 > blockSprite.getX()) {
+						tiro.setX(tiro.getX() + 3 * repulsao);
+						blockSprite.setX(blockSprite.getX() - 1 * repulsao);
+					} else {
+						if (tiro.getX() + 50 < blockSprite.getX()) {
+							tiro.setX(tiro.getX() - 3 * repulsao);
+							blockSprite.setX(blockSprite.getX() + 1 * repulsao);
+						}
+					}
+					if (tiro.getY() - 50 > blockSprite.getY()) {
+						tiro.setY(tiro.getY() + 3 * repulsao);
+						blockSprite.setY(blockSprite.getY() - 1 * repulsao);
+					} else {
+						if (tiro.getY() + 50 < blockSprite.getY()) {
+							tiro.setY(tiro.getY() - 3 * repulsao);
+							blockSprite.setY(blockSprite.getY() + 1 * repulsao);
+						}
+					}
+				}
+				if (repulsao2 != 0) {
+					repulsao2--;
+
+					if (tiro.getX() - 50 > posicaoAntigaX) {
+						tiro.setX(tiro.getX() + 2 * repulsao2);
+					} else {
+						if (tiro.getX() + 50 < posicaoAntigaX) {
+							tiro.setX(tiro.getX() - 2 * repulsao2);
+						}
+					}
+					if (tiro.getY() - 50 > posicaoAntigaY) {
+						tiro.setY(tiro.getY() + 2 * repulsao2);
+					} else {
+						if (tiro.getY() + 50 < posicaoAntigaY) {
+							tiro.setY(tiro.getY() - 2 * repulsao2);
+						}
+					}
+				}
+
+				if (blockSprite.getX() > largura - 100) {
+					blockSprite.setX(largura - 100);
+				}
+				if (blockSprite.getX() < 10) {
+					blockSprite.setX(10);
+				}
+				if (blockSprite.getY() > altura - 100) {
+					blockSprite.setY(altura - 100);
+				}
+				if (blockSprite.getY() < 50) {
+					blockSprite.setY(50);
+				}
+				if (tiro.getX() > largura - 100) {
+					tiro.setX(largura - 100);
+				}
+				if (tiro.getX() < 10) {
+					tiro.setX(10);
+				}
+				if (tiro.getY() > altura - 100) {
+					tiro.setY(altura - 100);
+				}
+				if (tiro.getY() < 50) {
+					tiro.setY(50);
+				}
+
+				int posicaoAtual = 0;
+				int posicaoARemover = -1;
+				Inimigo objetoForaDoMapa = null;
+
+				for (Inimigo atual : inimigos) {
+					if (blockSprite.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
+						estado = "morto";
+						break;
+					}
+					if (tiro.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
+						atual.setVida((byte) (atual.getVida() - 1));
+						if (atual.getVida() <= 0) {
+							posicaoARemover = posicaoAtual;
+							score += qualHorda * 10 * atual.getVidaInicial();
+							pontuacao = "score: " + score;
+						}
+						posicaoAntigaX = atual.getCoordenadaX();
+						posicaoAntigaY = atual.getCoordenadaY();
+						repulsao2 = 14;
+					}
+					if (atual.getVida() > 0) {
+						objetoForaDoMapa = atual.movimentar(blockSprite, inimigos, largura, altura);
+						posicaoAtual++;
+
+						batch.begin();
+						atual.getSpriteInimigo().draw(batch);
+						batch.end();
+					}
+				}
+
+				if (posicaoARemover != -1) {
+					inimigos.remove(posicaoARemover);
+				}
+
+				if (objetoForaDoMapa != null) {
+					inimigos.remove(objetoForaDoMapa);
+				}
+
+				stage.act(Gdx.graphics.getDeltaTime());
+				stage.draw();
+			}
+
+		if(tempoDeEspera != 0)
+		{
+			if(tempoDeEspera < 6) {
+				batch.begin();
+				contagem.setColor(1, 1, 1, 1);
+				contagem.getData().setScale(9);
+				contagem.draw(batch, Integer.toString((int)tempoDeEspera/2), largura/2, altura/2);
+				batch.end();
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException err) {
+					;
 				}
 			}
-
-			if (posicaoARemover != -1) {
-				inimigos.remove(posicaoARemover);
-			}
-
-			if (objetoForaDoMapa != null) {
-				inimigos.remove(objetoForaDoMapa);
-			}
-
-			stage.act(Gdx.graphics.getDeltaTime());
-			stage.draw();
+			tempoDeEspera--;
 		}
 	}
 
-	public boolean estaVivo()
+	public String getEstado()
 	{
-		return estaVivo;
+		return estado;
 	}
 
 	private void criarJoystics()
@@ -384,5 +411,22 @@ public class MyGdxGame implements Screen {
 		stage.addActor(touchpad);
 		stage.addActor(touchpad2);
 		Gdx.input.setInputProcessor(stage);
+	}
+
+	private void criarPause()
+	{
+		fotoPausar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
+		btnPausar = new ImageButton(fotoPausar);
+		btnPausar.setPosition(largura / 2 - btnPausar.getWidth(), 100);
+		btnPausar.setSize(200,200);
+		btnPausar.addListener(new InputListener(){
+			@Override
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				estado = "pausado";
+				return true;
+			}
+		});
+		Gdx.input.setInputProcessor(stage);
+		stage.addActor(btnPausar);
 	}
 }

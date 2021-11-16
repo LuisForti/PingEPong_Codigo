@@ -224,20 +224,22 @@ public class Inimigo {
             if(this != atual2)
             {
                 if(atual2.getVida() == 2) {
-                    if (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
-                        while (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
-                            if (this.getCoordenadaX() > atual2.getCoordenadaX() - 25) {
-                                this.setCoordenadaX(this.getCoordenadaX() + 1);
-                            } else {
-                                if (this.getCoordenadaX() < atual2.getCoordenadaX() + 25) {
-                                    this.setCoordenadaX(this.getCoordenadaX() - 1);
+                    if(!atual2.estaColado) {
+                        if (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
+                            while (this.getSpriteInimigo().getBoundingRectangle().overlaps(atual2.getSpriteInimigo().getBoundingRectangle())) {
+                                if (this.getCoordenadaX() > atual2.getCoordenadaX() - 25) {
+                                    this.setCoordenadaX(this.getCoordenadaX() + 1);
+                                } else {
+                                    if (this.getCoordenadaX() < atual2.getCoordenadaX() + 25) {
+                                        this.setCoordenadaX(this.getCoordenadaX() - 1);
+                                    }
                                 }
-                            }
-                            if (this.getCoordenadaY() > atual2.getCoordenadaY() - 25) {
-                                this.setCoordenadaY(this.getCoordenadaY() + 1);
-                            } else {
-                                if (this.getCoordenadaY() < atual2.getCoordenadaY() + 25) {
-                                    this.setCoordenadaY(this.getCoordenadaY() - 1);
+                                if (this.getCoordenadaY() > atual2.getCoordenadaY() - 25) {
+                                    this.setCoordenadaY(this.getCoordenadaY() + 1);
+                                } else {
+                                    if (this.getCoordenadaY() < atual2.getCoordenadaY() + 25) {
+                                        this.setCoordenadaY(this.getCoordenadaY() - 1);
+                                    }
                                 }
                             }
                         }

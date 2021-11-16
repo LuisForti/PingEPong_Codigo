@@ -23,12 +23,21 @@ public class TelaPrincipal extends Game {
         telaAtual.show();
     }
 
+    public void continuarJogo()
+    {
+        telaAtual.hide();
+        setScreen(jogo);
+        estado = "jogar";
+        jogo.resume();
+    }
+
     public void reiniciarJogo ()
     {
         telaAtual.hide();
         jogo = new MyGdxGame();
         jogo.setTamanhoDaTela(largura, altura);
         setScreen(jogo);
+        jogo.iniciar();
         estado = "jogar";
     }
 
@@ -52,13 +61,18 @@ public class TelaPrincipal extends Game {
             if (telaAtual.qualOEstado() == "jogar") {
                 reiniciarJogo();
             }
+            else if (telaAtual.qualOEstado() == "continuar")
+            {
+                continuarJogo();
+            }
         }
         else if(estado == "jogar")
         {
-            jogo.render(60);
-            if(!jogo.estaVivo())
+            switch (jogo.getEstado())
             {
-                trocarDeTela();
+                case "vivo": jogo.render(60); break;
+                case "morto": trocarDeTela(); break;
+                case "pausado": trocarDeTela(); break;
             }
         }
     }
