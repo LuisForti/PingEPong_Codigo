@@ -10,7 +10,7 @@ public class Inimigo {
     private byte tipoDeMovimento;
     private Texture foto;
     private Sprite spriteInimigo;
-    private byte velocidade = 5;
+    private byte velocidade = 4;
     private boolean estaColado = false;
 
     public void setVida(byte vida)
@@ -128,36 +128,36 @@ public class Inimigo {
         int rotacao = 0;
 
         if (this.getCoordenadaX() - 50 > nave.getX()) {
-            this.setCoordenadaX(this.getCoordenadaX() - velocidade + 2);
+            this.setCoordenadaX(this.getCoordenadaX() - velocidade + 1);
             rotacao = 1;
         } else {
             if (this.getCoordenadaX() + 50 < nave.getX()) {
-                this.setCoordenadaX(this.getCoordenadaX() + velocidade - 2);
+                this.setCoordenadaX(this.getCoordenadaX() + velocidade - 1);
                 rotacao = 2;
             }
         }
         if (this.getCoordenadaY() - 50 > nave.getY()) {
-            this.setCoordenadaY(this.getCoordenadaY() - velocidade + 2);
+            this.setCoordenadaY(this.getCoordenadaY() - velocidade + 1);
             if (rotacao == 0) {
                 rotacao = 3;
             } else if (rotacao == 1) {
                 rotacao = 4;
-                this.setCoordenadaX(this.getCoordenadaX() + 2);
+                this.setCoordenadaX(this.getCoordenadaX() + 1);
             } else {
                 rotacao = 5;
-                this.setCoordenadaX(this.getCoordenadaX() - 2);
+                this.setCoordenadaX(this.getCoordenadaX() - 1);
             }
         } else {
             if (this.getCoordenadaY() + 50 < nave.getY()) {
-                this.setCoordenadaY(this.getCoordenadaY() + velocidade - 2);
+                this.setCoordenadaY(this.getCoordenadaY() + velocidade - 1);
                 if (rotacao == 0) {
                     rotacao = 6;
                 } else if (rotacao == 1) {
                     rotacao = 7;
-                    this.setCoordenadaX(this.getCoordenadaX() + 2);
+                    this.setCoordenadaX(this.getCoordenadaX() + 1);
                 } else {
                     rotacao = 8;
-                    this.setCoordenadaX(this.getCoordenadaX() - 2);
+                    this.setCoordenadaX(this.getCoordenadaX() - 1);
                 }
             }
         }

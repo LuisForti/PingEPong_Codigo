@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,31 +16,38 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.awt.Menu;
 
 public class MenuPrincipal implements Screen {
-    private SpriteBatch batch;
-    private String estado;
+    private String estado = "nada";
+    private float largura, altura;
+    private Texture titulo;
+    private Texture fundo;
     private Drawable fotoJogar;
-    private ImageButton btnJogar;
-    private ImageButton btnTeste1;
-    private Stage palco;
-    private Explosao teste;
+    private Button btnJogar;
+    private Drawable fotoComoJogar;
+    private Button btnComoJogar;
+    private SpriteBatch batch;
+    private Stage stage;
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
-        fotoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
-        btnJogar = new ImageButton(fotoJogar);
-        btnJogar.setPosition(600, 300);
-        btnJogar.setSize(200,200);
+        titulo = new Texture(Gdx.files.internal("titulo.png"));
+        fundo = new Texture(Gdx.files.internal("fundo.png"));
+        fotoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("jogar.png"))));
+        fotoComoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("comojogar.png"))));
+        btnJogar = new Button(fotoJogar);
+        btnJogar.setPosition(0, 0);
         btnJogar.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -46,30 +55,40 @@ public class MenuPrincipal implements Screen {
                 return true;
             }
         });
-        btnTeste1 = new ImageButton(fotoJogar);
-        btnTeste1.setPosition(800, 200);
-        btnTeste1.setSize(200,200);
-        btnTeste1.addListener(new InputListener(){
+
+        btnComoJogar = new Button(fotoComoJogar);
+        btnComoJogar.setPosition(0, 0);
+        btnComoJogar.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 estado = "continuar";
-                btnJogar.setVisible(!btnJogar.isVisible());
                 return true;
             }
         });
-        palco = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(palco);
-        palco.addActor(btnJogar);
-        palco.addActor(btnTeste1);
-        estado = "nada";
+
+        stage = new Stage();
+        Gdx.input.setInputProcessor(stage);
+        btnJogar.setPosition(largura/2 + 200, altura/4 + 300);
+        btnJogar.setWidth(largura/4);
+        btnJogar.setHeight(largura/16);
+        stage.addActor(btnJogar);
+        btnComoJogar.setPosition(largura/2 + 200, altura/3);
+        btnComoJogar.setWidth(largura/4);
+        btnComoJogar.setHeight(largura/16);
+        stage.addActor(btnComoJogar);
+        batch = new SpriteBatch();
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        palco.act();
-        palco.draw();
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+        batch.draw(fundo, 0, 0, (int)largura, (int)altura);
+        batch.draw(titulo, largura/2 - largura/3, altura/6, (int)largura/3, (int)largura/3);
+        batch.end();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
     }
 
     @Override
@@ -100,5 +119,10 @@ public class MenuPrincipal implements Screen {
     public String qualOEstado()
     {
         return estado;
+    }
+    public void setTamanho(float largura, float altura)
+    {
+        this.largura = largura;
+        this.altura = altura;
     }
 }

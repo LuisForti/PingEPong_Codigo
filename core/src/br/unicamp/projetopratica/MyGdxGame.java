@@ -52,6 +52,7 @@ public class MyGdxGame implements Screen {
 	private LinkedList<Inimigo> inimigos;
 	private int rotacao;
 	private String estado = "vivo";
+	private byte morrendo = 60;
 
 	//Tempo e invocação
 	private double frame = 1499.5;
@@ -99,12 +100,10 @@ public class MyGdxGame implements Screen {
 		criarJoystics();
 		criarPause();
 
-		blockSpeed = 10;
-
-		score = 0;
-		pontuacao = "score: 0";
+		blockSpeed = 8;
 		scoreboard = new BitmapFont();
 		contagem = new BitmapFont();
+		morrendo = 60;
 	}
 
 	public void iniciar(){
@@ -122,6 +121,9 @@ public class MyGdxGame implements Screen {
 		//Set position to centre of the screen
 		tiro.setPosition(blockSprite.getX() + 300, blockSprite.getY());
 		tiro.setScale(2);
+
+		score = 0;
+		pontuacao = "score: 0";
 	}
 
 	@Override
@@ -152,63 +154,12 @@ public class MyGdxGame implements Screen {
 
 	@Override
 	public void render(float delta) {
-			if (estado == "vivo") {
 				frame += 0.5;
-				if (quantosInvocou < quantosInvocar) {
-					if (frame == (tempoDesdeAUltimaHorda + ((150 / quantosInvocar) * (quantosInvocou)))) {
-						quantosInvocouTotal++;
-						quantosInvocou++;
-						if (quantosInvocou % 4 == 0) {
-							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
-						} else if (quantosInvocou % 3 == 0) {
-							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
-						} else if (quantosInvocou % 2 == 0) {
-							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
-						} else {
-							inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
-						}
-					}
+
+				if (estado == "vivo") {
+					invocar();
 				}
-				if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar2) * (quantosInvocou2)))) {
-					quantosInvocouTotal++;
-					quantosInvocou2++;
-					if (quantosInvocou2 % 4 == 0) {
-						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
-					} else if (quantosInvocou2 % 3 == 0) {
-						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
-					} else if (quantosInvocou2 % 2 == 0) {
-						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
-					} else {
-						inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
-					}
-				}
-				if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar3) * (quantosInvocou3)))) {
-					quantosInvocouTotal++;
-					quantosInvocou3++;
-					if (quantosInvocou3 % 2 == 0) {
-						inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
-					} else {
-						inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
-					}
-				}
-				if (frame % 300 == 0) {
-					quantosInvocar += 6;
-					while (quantosInvocar > (30 * (int) (frame / 1500))) {
-						quantosInvocar2++;
-						quantosInvocar -= 15;
-					}
-					while (quantosInvocar2 > 7 * (int) (frame / 1500)) {
-						quantosInvocar2 -= 5;
-						quantosInvocar3++;
-					}
-					quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
-					quantosInvocouTotal = 0;
-					quantosInvocou = 0;
-					quantosInvocou2 = 0;
-					quantosInvocou3 = 0;
-					tempoDesdeAUltimaHorda = (int) frame + 0.5;
-					qualHorda++;
-				}
+
 				Gdx.gl.glClearColor(0, 0, 0, 1);
 				Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 				camera.update();
@@ -217,142 +168,39 @@ public class MyGdxGame implements Screen {
 				scoreboard.setColor(1, 1, 1, 1);
 				scoreboard.getData().setScale(5);
 				scoreboard.draw(batch, pontuacao, 50, altura - 10);
-				blockSprite.draw(batch);
-				tiro.draw(batch);
 				batch.end();
 
-				blockSprite.setX(blockSprite.getX() + touchpad.getKnobPercentX() * (blockSpeed - 2));
-				blockSprite.setY(blockSprite.getY() + touchpad.getKnobPercentY() * (blockSpeed - 2));
-
-				if (touchpad.getKnobPercentX() != 0) {
-					if (touchpad.getKnobPercentY() < 0) {
-						blockSprite.setRotation((touchpad.getKnobPercentX() * 90) + 180);
-					} else {
-						blockSprite.setRotation(touchpad.getKnobPercentX() * -90);
-					}
-				}
-
-				tiro.setX(tiro.getX() + touchpad2.getKnobPercentX() * blockSpeed);
-				tiro.setY(tiro.getY() + touchpad2.getKnobPercentY() * blockSpeed);
-
-				if (touchpad2.getKnobPercentX() != 0) {
-					if (touchpad2.getKnobPercentY() < 0) {
-						tiro.setRotation((touchpad2.getKnobPercentX() * 90) + 180);
-					} else {
-						tiro.setRotation(touchpad2.getKnobPercentX() * -90);
-					}
-				}
-
-				if (tiro.getBoundingRectangle().overlaps(blockSprite.getBoundingRectangle())) {
-					repulsao = 15;
-				}
-				if (repulsao > 0) {
-					repulsao--;
-
-					if (tiro.getX() - 50 > blockSprite.getX()) {
-						tiro.setX(tiro.getX() + 3 * repulsao);
-						blockSprite.setX(blockSprite.getX() - 1 * repulsao);
-					} else {
-						if (tiro.getX() + 50 < blockSprite.getX()) {
-							tiro.setX(tiro.getX() - 3 * repulsao);
-							blockSprite.setX(blockSprite.getX() + 1 * repulsao);
-						}
-					}
-					if (tiro.getY() - 50 > blockSprite.getY()) {
-						tiro.setY(tiro.getY() + 3 * repulsao);
-						blockSprite.setY(blockSprite.getY() - 1 * repulsao);
-					} else {
-						if (tiro.getY() + 50 < blockSprite.getY()) {
-							tiro.setY(tiro.getY() - 3 * repulsao);
-							blockSprite.setY(blockSprite.getY() + 1 * repulsao);
-						}
-					}
-				}
-				if (repulsao2 != 0) {
-					repulsao2--;
-
-					if (tiro.getX() - 50 > posicaoAntigaX) {
-						tiro.setX(tiro.getX() + 2 * repulsao2);
-					} else {
-						if (tiro.getX() + 50 < posicaoAntigaX) {
-							tiro.setX(tiro.getX() - 2 * repulsao2);
-						}
-					}
-					if (tiro.getY() - 50 > posicaoAntigaY) {
-						tiro.setY(tiro.getY() + 2 * repulsao2);
-					} else {
-						if (tiro.getY() + 50 < posicaoAntigaY) {
-							tiro.setY(tiro.getY() - 2 * repulsao2);
-						}
-					}
-				}
-
-				if (blockSprite.getX() > largura - 100) {
-					blockSprite.setX(largura - 100);
-				}
-				if (blockSprite.getX() < 10) {
-					blockSprite.setX(10);
-				}
-				if (blockSprite.getY() > altura - 100) {
-					blockSprite.setY(altura - 100);
-				}
-				if (blockSprite.getY() < 50) {
-					blockSprite.setY(50);
-				}
-				if (tiro.getX() > largura - 100) {
-					tiro.setX(largura - 100);
-				}
-				if (tiro.getX() < 10) {
-					tiro.setX(10);
-				}
-				if (tiro.getY() > altura - 100) {
-					tiro.setY(altura - 100);
-				}
-				if (tiro.getY() < 50) {
-					tiro.setY(50);
-				}
-
-				int posicaoAtual = 0;
-				int posicaoARemover = -1;
-				Inimigo objetoForaDoMapa = null;
-
-				for (Inimigo atual : inimigos) {
-					if (blockSprite.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
-						estado = "morto";
-						break;
-					}
-					if (tiro.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
-						atual.setVida((byte) (atual.getVida() - 1));
-						if (atual.getVida() <= 0) {
-							posicaoARemover = posicaoAtual;
-							score += qualHorda * 10 * atual.getVidaInicial();
-							pontuacao = "score: " + score;
-						}
-						posicaoAntigaX = atual.getCoordenadaX();
-						posicaoAntigaY = atual.getCoordenadaY();
-						repulsao2 = 14;
-					}
-					if (atual.getVida() > 0) {
-						objetoForaDoMapa = atual.movimentar(blockSprite, inimigos, largura, altura);
-						posicaoAtual++;
-
+				if(estado != "morto" && estado != "morrendo") {
+					if(tempoDeEspera == 0) {
 						batch.begin();
-						atual.getSpriteInimigo().draw(batch);
+						blockSprite.draw(batch);
+						tiro.draw(batch);
+						batch.end();
+						moverJogador();
+						moverCriaturas();
+					}
+					else
+					{
+						batch.begin();
+						blockSprite.draw(batch);
+						tiro.draw(batch);
+						for (Inimigo atual : inimigos) {
+							atual.getSpriteInimigo().draw(batch);
+						}
 						batch.end();
 					}
 				}
-
-				if (posicaoARemover != -1) {
-					explosoes.add(new Explosao(inimigos.get(posicaoARemover).getCoordenadaX(), inimigos.get(posicaoARemover).getCoordenadaY()));
-					inimigos.remove(posicaoARemover);
+				else
+				{
+					batch.begin();
+					for (Inimigo atual : inimigos) {
+						atual.getSpriteInimigo().draw(batch);
+					}
+					batch.end();
 				}
 
-				if (objetoForaDoMapa != null) {
-					inimigos.remove(objetoForaDoMapa);
-				}
-
-				posicaoAtual = -1;
-				posicaoARemover = -1;
+				int posicaoAtual = -1;
+				int posicaoARemover = -1;
 				for(Explosao atual: explosoes)
 				{
 					posicaoAtual++;
@@ -368,7 +216,16 @@ public class MyGdxGame implements Screen {
 
 				stage.act(Gdx.graphics.getDeltaTime());
 				stage.draw();
-			}
+
+				if(estado == "morrendo")
+				{
+					morrendo--;
+				}
+
+				if(morrendo == 0)
+				{
+					estado = "morto";
+				}
 
 		if(tempoDeEspera != 0)
 		{
@@ -392,6 +249,10 @@ public class MyGdxGame implements Screen {
 	{
 		return estado;
 	}
+	public String getPontos()
+	{
+		return pontuacao;
+	}
 
 	private void criarJoystics()
 	{
@@ -399,8 +260,8 @@ public class MyGdxGame implements Screen {
 		touchpadSkin = new Skin();
 		touchpadSkin2 = new Skin();
 		//Set background image
-		touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-		touchpadSkin2.add("touchBackground", new Texture("touchBackground.png"));
+		touchpadSkin.add("touchBackground", new Texture("touchFundoNave1.png"));
+		touchpadSkin2.add("touchBackground", new Texture("touchFundoNave2.png"));
 		//Set knob image
 		touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
 		touchpadSkin2.add("touchKnob", new Texture("touchKnob.png"));
@@ -410,13 +271,13 @@ public class MyGdxGame implements Screen {
 		//Create Drawable's from TouchPad skin
 		touchBackground = touchpadSkin.getDrawable("touchBackground");
 		touchKnob = touchpadSkin.getDrawable("touchKnob");
-		touchBackground2 = touchpadSkin.getDrawable("touchBackground");
-		touchKnob2 = touchpadSkin.getDrawable("touchKnob");
+		touchBackground2 = touchpadSkin2.getDrawable("touchBackground");
+		touchKnob2 = touchpadSkin2.getDrawable("touchKnob");
 		//Apply the Drawables to the TouchPad Style
 		touchpadStyle.background = touchBackground;
 		touchpadStyle.knob = touchKnob;
-		touchpadStyle2.background = touchBackground;
-		touchpadStyle2.knob = touchKnob;
+		touchpadStyle2.background = touchBackground2;
+		touchpadStyle2.knob = touchKnob2;
 		//Create new TouchPad with the created style
 		touchpad = new Touchpad(10, touchpadStyle);
 		touchpad2 = new Touchpad(10, touchpadStyle2);
@@ -446,5 +307,202 @@ public class MyGdxGame implements Screen {
 		});
 		Gdx.input.setInputProcessor(stage);
 		stage.addActor(btnPausar);
+	}
+
+	private void invocar()
+	{
+		if (quantosInvocou < quantosInvocar) {
+			if (frame == (tempoDesdeAUltimaHorda + ((150 / quantosInvocar) * (quantosInvocou)))) {
+				quantosInvocouTotal++;
+				quantosInvocou++;
+				if (quantosInvocou % 4 == 0) {
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
+				} else if (quantosInvocou % 3 == 0) {
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
+				} else if (quantosInvocou % 2 == 0) {
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
+				} else {
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
+				}
+			}
+		}
+		if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar2) * (quantosInvocou2)))) {
+			quantosInvocouTotal++;
+			quantosInvocou2++;
+			if (quantosInvocou2 % 4 == 0) {
+				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
+			} else if (quantosInvocou2 % 3 == 0) {
+				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
+			} else if (quantosInvocou2 % 2 == 0) {
+				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
+			} else {
+				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
+			}
+		}
+		if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar3) * (quantosInvocou3)))) {
+			quantosInvocouTotal++;
+			quantosInvocou3++;
+			if (quantosInvocou3 % 2 == 0) {
+				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
+			} else {
+				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
+			}
+		}
+		if (frame % 300 == 0) {
+			quantosInvocar += 6;
+			while (quantosInvocar > (30 * (int) (frame / 1500))) {
+				quantosInvocar2++;
+				quantosInvocar -= 15;
+			}
+			while (quantosInvocar2 > 3 * (int) (frame / 1500)) {
+				quantosInvocar2 -= 2;
+				quantosInvocar3++;
+			}
+			quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
+			quantosInvocouTotal = 0;
+			quantosInvocou = 0;
+			quantosInvocou2 = 0;
+			quantosInvocou3 = 0;
+			tempoDesdeAUltimaHorda = (int) frame + 0.5;
+			qualHorda++;
+		}
+	}
+
+	private void moverJogador()
+	{
+		blockSprite.setX(blockSprite.getX() + touchpad.getKnobPercentX() * blockSpeed);
+		blockSprite.setY(blockSprite.getY() + touchpad.getKnobPercentY() * blockSpeed);
+
+		if (touchpad.getKnobPercentX() != 0) {
+			if (touchpad.getKnobPercentY() < 0) {
+				blockSprite.setRotation((touchpad.getKnobPercentX() * 90) + 180);
+			} else {
+				blockSprite.setRotation(touchpad.getKnobPercentX() * -90);
+			}
+		}
+
+		tiro.setX(tiro.getX() + touchpad2.getKnobPercentX() * blockSpeed);
+		tiro.setY(tiro.getY() + touchpad2.getKnobPercentY() * blockSpeed);
+
+		if (touchpad2.getKnobPercentX() != 0) {
+			if (touchpad2.getKnobPercentY() < 0) {
+				tiro.setRotation((touchpad2.getKnobPercentX() * 90) + 180);
+			} else {
+				tiro.setRotation(touchpad2.getKnobPercentX() * -90);
+			}
+		}
+
+		if (tiro.getBoundingRectangle().overlaps(blockSprite.getBoundingRectangle())) {
+			repulsao = 12;
+		}
+		if (repulsao > 0) {
+			repulsao--;
+
+			if (tiro.getX() - 50 > blockSprite.getX()) {
+				tiro.setX(tiro.getX() + 3 * repulsao);
+				blockSprite.setX(blockSprite.getX() - 1 * repulsao);
+			} else {
+				if (tiro.getX() + 50 < blockSprite.getX()) {
+					tiro.setX(tiro.getX() - 3 * repulsao);
+					blockSprite.setX(blockSprite.getX() + 1 * repulsao);
+				}
+			}
+			if (tiro.getY() - 50 > blockSprite.getY()) {
+				tiro.setY(tiro.getY() + 3 * repulsao);
+				blockSprite.setY(blockSprite.getY() - 1 * repulsao);
+			} else {
+				if (tiro.getY() + 50 < blockSprite.getY()) {
+					tiro.setY(tiro.getY() - 3 * repulsao);
+					blockSprite.setY(blockSprite.getY() + 1 * repulsao);
+				}
+			}
+		}
+		if (repulsao2 != 0) {
+			repulsao2--;
+
+			if (tiro.getX() - 50 > posicaoAntigaX) {
+				tiro.setX(tiro.getX() + 2 * repulsao2);
+			} else {
+				if (tiro.getX() + 50 < posicaoAntigaX) {
+					tiro.setX(tiro.getX() - 2 * repulsao2);
+				}
+			}
+			if (tiro.getY() - 50 > posicaoAntigaY) {
+				tiro.setY(tiro.getY() + 2 * repulsao2);
+			} else {
+				if (tiro.getY() + 50 < posicaoAntigaY) {
+					tiro.setY(tiro.getY() - 2 * repulsao2);
+				}
+			}
+		}
+
+		if (blockSprite.getX() > largura - 100) {
+			blockSprite.setX(largura - 100);
+		}
+		if (blockSprite.getX() < 10) {
+			blockSprite.setX(10);
+		}
+		if (blockSprite.getY() > altura - 100) {
+			blockSprite.setY(altura - 100);
+		}
+		if (blockSprite.getY() < 50) {
+			blockSprite.setY(50);
+		}
+		if (tiro.getX() > largura - 100) {
+			tiro.setX(largura - 100);
+		}
+		if (tiro.getX() < 10) {
+			tiro.setX(10);
+		}
+		if (tiro.getY() > altura - 100) {
+			tiro.setY(altura - 100);
+		}
+		if (tiro.getY() < 50) {
+			tiro.setY(50);
+		}
+	}
+
+	private void moverCriaturas()
+	{
+		int posicaoAtual = 0;
+		int posicaoARemover = -1;
+		Inimigo objetoForaDoMapa = null;
+
+		for (Inimigo atual : inimigos) {
+			if (blockSprite.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
+				estado = "morrendo";
+
+				explosoes.add(new Explosao(blockSprite.getX(), blockSprite.getY()));
+				break;
+			}
+			if (tiro.getBoundingRectangle().overlaps(atual.getSpriteInimigo().getBoundingRectangle())) {
+				atual.setVida((byte) (atual.getVida() - 1));
+				if (atual.getVida() <= 0) {
+					posicaoARemover = posicaoAtual;
+					score += qualHorda * 10 * atual.getVidaInicial();
+					pontuacao = "score: " + score;
+				}
+				posicaoAntigaX = atual.getCoordenadaX();
+				posicaoAntigaY = atual.getCoordenadaY();
+				repulsao2 = 10;
+			}
+			if (atual.getVida() > 0) {
+				objetoForaDoMapa = atual.movimentar(blockSprite, inimigos, largura, altura);
+				posicaoAtual++;
+
+				batch.begin();
+				atual.getSpriteInimigo().draw(batch);
+				batch.end();
+			}
+		}
+
+		if (posicaoARemover != -1) {
+			explosoes.add(new Explosao(inimigos.get(posicaoARemover).getCoordenadaX(), inimigos.get(posicaoARemover).getCoordenadaY()));
+			inimigos.remove(posicaoARemover);
+		}
+
+		if (objetoForaDoMapa != null) {
+			inimigos.remove(objetoForaDoMapa);
+		}
 	}
 }

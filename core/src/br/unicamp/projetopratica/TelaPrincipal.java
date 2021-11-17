@@ -19,6 +19,7 @@ public class TelaPrincipal extends Game {
     {
         telaAtual = new MenuPrincipal();
         estado = "menu";
+        telaAtual.setTamanho(largura, altura);
         setScreen(telaAtual);
         telaAtual.show();
     }
@@ -49,6 +50,7 @@ public class TelaPrincipal extends Game {
         jogo.setTamanhoDaTela(largura, altura);
         telaAtual = new MenuPrincipal();
         estado = "menu";
+        telaAtual.setTamanho(largura, altura);
         setScreen(telaAtual);
         telaAtual.show();
     }
@@ -71,6 +73,7 @@ public class TelaPrincipal extends Game {
             switch (jogo.getEstado())
             {
                 case "vivo": jogo.render(60); break;
+                case "morrendo": jogo.render(60); break;
                 case "morto": trocarDeTela(); break;
                 case "pausado": trocarDeTela(); break;
             }
