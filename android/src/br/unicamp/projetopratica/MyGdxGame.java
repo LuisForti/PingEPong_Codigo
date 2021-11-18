@@ -443,29 +443,29 @@ public class MyGdxGame implements Screen {
 			}
 		}
 
-		if (blockSprite.getX() > largura - 100) {
-			blockSprite.setX(largura - 100);
+		if (blockSprite.getX() > largura - 200) {
+			blockSprite.setX(largura - 200);
 		}
-		if (blockSprite.getX() < 10) {
-			blockSprite.setX(10);
+		if (blockSprite.getX() < 200) {
+			blockSprite.setX(200);
 		}
 		if (blockSprite.getY() > altura - 100) {
 			blockSprite.setY(altura - 100);
 		}
-		if (blockSprite.getY() < 50) {
-			blockSprite.setY(50);
+		if (blockSprite.getY() < 100) {
+			blockSprite.setY(100);
 		}
-		if (tiro.getX() > largura - 100) {
-			tiro.setX(largura - 100);
+		if (tiro.getX() > largura - 200) {
+			tiro.setX(largura - 200);
 		}
-		if (tiro.getX() < 10) {
-			tiro.setX(10);
+		if (tiro.getX() < 200) {
+			tiro.setX(200);
 		}
 		if (tiro.getY() > altura - 100) {
 			tiro.setY(altura - 100);
 		}
-		if (tiro.getY() < 50) {
-			tiro.setY(50);
+		if (tiro.getY() < 100) {
+			tiro.setY(100);
 		}
 	}
 

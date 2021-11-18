@@ -9,7 +9,6 @@ public class TelaPrincipal extends Game {
     MenuPrincipal telaMenu;
     TelaDeMorte telaDeMorte;
     MyGdxGame jogo;
-    int tempo = 0;
     String estado;
     float largura, altura;
     Context context;
@@ -28,13 +27,15 @@ public class TelaPrincipal extends Game {
     public void trocarParaMorte ()
     {
         estado = "morte";
+        telaDeMorte = new TelaDeMorte();
+        telaDeMorte.setTamanho(largura, altura, context);
         setScreen(telaDeMorte);
         telaDeMorte.setPontos(jogo.getPontos());
     }
 
     public void continuarJogo()
     {
-        telaMenu.hide();
+        telaDeMorte.setTamanho(largura, altura, context);
         setScreen(jogo);
         estado = "jogar";
         jogo.resume();
@@ -42,7 +43,6 @@ public class TelaPrincipal extends Game {
 
     public void reiniciarJogo ()
     {
-        telaMenu.hide();
         jogo = new MyGdxGame();
         jogo.setTamanhoDaTela(largura, altura);
         setScreen(jogo);
@@ -57,10 +57,8 @@ public class TelaPrincipal extends Game {
         jogo = new MyGdxGame();
         jogo.setTamanhoDaTela(largura, altura);
         telaMenu = new MenuPrincipal();
-        telaDeMorte = new TelaDeMorte();
         estado = "menu";
         telaMenu.setTamanho(largura, altura);
-        telaDeMorte.setTamanho(largura, altura, context);
         setScreen(telaMenu);
         telaMenu.show();
     }
@@ -91,6 +89,10 @@ public class TelaPrincipal extends Game {
         else
         {
             telaDeMorte.render(60);
+            if(telaDeMorte.getEstado() == "salvo")
+            {
+                trocarParaMenu();
+            }
         }
     }
 }

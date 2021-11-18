@@ -74,7 +74,7 @@ public class MenuPrincipal implements Screen {
         btnComoJogar.setPosition(largura/2 + 200, altura/3);
         btnComoJogar.setWidth(largura/4);
         btnComoJogar.setHeight(largura/16);
-        stage.addActor(btnComoJogar);
+        //stage.addActor(btnComoJogar);
         batch = new SpriteBatch();
     }
 

@@ -36,12 +36,14 @@ public class TelaDeMorte implements Screen {
     private Drawable fotoJogar;
     private Button btnJogar;
     private Stage stage;
+    private String estado;
 
     private SQLiteDatabase bancoDados;
     Context context;
 
     @Override
     public void show() {
+        estado = "nada";
         scoreboard = new BitmapFont();
         scoreboardHighScore = new BitmapFont();
         batch = new SpriteBatch();
@@ -52,6 +54,7 @@ public class TelaDeMorte implements Screen {
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 setRecorde();
+                estado = "salvo";
                 return true;
             }
         });
@@ -78,7 +81,7 @@ public class TelaDeMorte implements Screen {
         scoreboard.draw(batch, pontuacao, largura/3, altura/3);
         scoreboardHighScore.setColor(0, 0, 0, 1);
         scoreboardHighScore.getData().setScale(5);
-        scoreboardHighScore.draw(batch, highestScore, largura/3, altura/3 + 200);
+        scoreboardHighScore.draw(batch, "HighScore: " + highestScore, largura/3, altura/3 + 200);
         batch.end();
         stage.act();
         stage.draw();
@@ -120,7 +123,6 @@ public class TelaDeMorte implements Screen {
     {
         pontuacao = pontos;
         score = Integer.parseInt(pontuacao.substring(7));
-        System.out.println(score);
     }
 
     private void getDados()
@@ -129,6 +131,9 @@ public class TelaDeMorte implements Screen {
         ArrayList<Pontuacao> pArray = r.getPontuacao();
         ArrayList list = new ArrayList();
         Pontuacao p1 = pArray.get(0);
+
+        System.out.println(p1.getId());
+        System.out.println(p1.getPontos());
 
         highestScore = Integer.toString(p1.getPontos());
     }
@@ -149,5 +154,10 @@ public class TelaDeMorte implements Screen {
         {
             System.out.println("é menor seu palerma");
         }
+    }
+
+    public String getEstado()
+    {
+        return estado;
     }
 }

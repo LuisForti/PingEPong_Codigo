@@ -6,6 +6,7 @@ public class Pontuacao {
     Integer pontos;
 
     public Pontuacao() {
+        id = 1;
     }
 
     public Integer getId() {
