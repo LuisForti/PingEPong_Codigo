@@ -2,10 +2,10 @@ package br.unicamp.projetopratica;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 
 public class TelaPrincipal extends Game {
-    MenuPrincipal telaAtual;
+    MenuPrincipal telaMenu;
+    TelaDeMorte telaDeMorte;
     MyGdxGame jogo;
     int tempo = 0;
     String estado;
@@ -15,18 +15,22 @@ public class TelaPrincipal extends Game {
     {
     }
 
-    public void trocarDeTela ()
+    public void trocarParaMenu ()
     {
-        telaAtual = new MenuPrincipal();
         estado = "menu";
-        telaAtual.setTamanho(largura, altura);
-        setScreen(telaAtual);
-        telaAtual.show();
+        setScreen(telaMenu);
+    }
+
+    public void trocarParaMorte ()
+    {
+        estado = "morte";
+        setScreen(telaDeMorte);
+        telaDeMorte.setPontos(jogo.getPontos());
     }
 
     public void continuarJogo()
     {
-        telaAtual.hide();
+        telaMenu.hide();
         setScreen(jogo);
         estado = "jogar";
         jogo.resume();
@@ -34,7 +38,7 @@ public class TelaPrincipal extends Game {
 
     public void reiniciarJogo ()
     {
-        telaAtual.hide();
+        telaMenu.hide();
         jogo = new MyGdxGame();
         jogo.setTamanhoDaTela(largura, altura);
         setScreen(jogo);
@@ -48,22 +52,24 @@ public class TelaPrincipal extends Game {
         altura = Gdx.graphics.getHeight();
         jogo = new MyGdxGame();
         jogo.setTamanhoDaTela(largura, altura);
-        telaAtual = new MenuPrincipal();
+        telaMenu = new MenuPrincipal();
+        telaDeMorte = new TelaDeMorte();
         estado = "menu";
-        telaAtual.setTamanho(largura, altura);
-        setScreen(telaAtual);
-        telaAtual.show();
+        telaMenu.setTamanho(largura, altura);
+        telaDeMorte.setTamanho(largura, altura);
+        setScreen(telaMenu);
+        telaMenu.show();
     }
 
     @Override
     public void render()
     {
         if(estado == "menu") {
-            telaAtual.render(60);
-            if (telaAtual.qualOEstado() == "jogar") {
+            telaMenu.render(60);
+            if (telaMenu.qualOEstado() == "jogar") {
                 reiniciarJogo();
             }
-            else if (telaAtual.qualOEstado() == "continuar")
+            else if (telaMenu.qualOEstado() == "continuar")
             {
                 continuarJogo();
             }
@@ -74,9 +80,13 @@ public class TelaPrincipal extends Game {
             {
                 case "vivo": jogo.render(60); break;
                 case "morrendo": jogo.render(60); break;
-                case "morto": trocarDeTela(); break;
-                case "pausado": trocarDeTela(); break;
+                case "morto": trocarParaMorte(); break;
+                case "pausado": trocarParaMenu(); break;
             }
+        }
+        else
+        {
+            telaDeMorte.render(60);
         }
     }
 }

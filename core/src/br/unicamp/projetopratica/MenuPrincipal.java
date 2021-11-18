@@ -42,6 +42,7 @@ public class MenuPrincipal implements Screen {
 
     @Override
     public void show() {
+        estado = "nada";
         titulo = new Texture(Gdx.files.internal("titulo.png"));
         fundo = new Texture(Gdx.files.internal("fundo.png"));
         fotoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("jogar.png"))));
@@ -120,6 +121,7 @@ public class MenuPrincipal implements Screen {
     {
         return estado;
     }
+
     public void setTamanho(float largura, float altura)
     {
         this.largura = largura;

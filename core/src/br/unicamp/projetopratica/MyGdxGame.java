@@ -55,11 +55,11 @@ public class MyGdxGame implements Screen {
 	private byte morrendo = 60;
 
 	//Tempo e invocação
-	private double frame = 1499.5;
-	private int quantosInvocarTotal = 12;
+	private double frame = 899.5;
+	private int quantosInvocarTotal = 10;
 	private int quantosInvocar = 10;
-	private int quantosInvocar2 = 1;
-	private int quantosInvocar3 = 1;
+	private int quantosInvocar2 = 0;
+	private int quantosInvocar3 = 0;
 	private int quantosInvocouTotal = 0;
 	private int quantosInvocou = 0;
 	private int quantosInvocou2 = 0;
@@ -83,6 +83,7 @@ public class MyGdxGame implements Screen {
 	//Tamanho da tela
 	private float largura;
 	private float altura;
+	private Texture fundo;
 
 	public void setTamanhoDaTela(float largura, float altura)
 	{
@@ -107,6 +108,7 @@ public class MyGdxGame implements Screen {
 	}
 
 	public void iniciar(){
+		fundo = new Texture(Gdx.files.internal("fundo.png"));
 		inimigos = new LinkedList<>();
 		explosoes = new LinkedList<>();
 		//Create block sprite
@@ -165,6 +167,7 @@ public class MyGdxGame implements Screen {
 				camera.update();
 
 				batch.begin();
+				batch.draw(fundo, 0, 0, (int)largura, (int)altura);
 				scoreboard.setColor(1, 1, 1, 1);
 				scoreboard.getData().setScale(5);
 				scoreboard.draw(batch, pontuacao, 50, altura - 10);
@@ -316,47 +319,53 @@ public class MyGdxGame implements Screen {
 				quantosInvocouTotal++;
 				quantosInvocou++;
 				if (quantosInvocou % 4 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 200) + largura, quantosInvocou * 6));
 				} else if (quantosInvocou % 3 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, (float) (Math.random() * 100) - 200, quantosInvocou * 6));
 				} else if (quantosInvocou % 2 == 0) {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocou * 12, (float) (Math.random() * 100) - 200));
 				} else {
-					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
+					inimigos.add(new Inimigo((byte) 1, "inimigo1.png", 33, 50, quantosInvocou * 12, (float) (Math.random() * 200) + altura));
 				}
 			}
 		}
-		if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar2) * (quantosInvocou2)))) {
-			quantosInvocouTotal++;
-			quantosInvocou2++;
-			if (quantosInvocou2 % 4 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 200) + largura, quantosInvocouTotal * 6));
-			} else if (quantosInvocou2 % 3 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 100) - 200, quantosInvocouTotal * 6));
-			} else if (quantosInvocou2 % 2 == 0) {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 100) - 200));
-			} else {
-				inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocouTotal * 12, (float) (Math.random() * 200) + altura));
+		if (quantosInvocou2 < quantosInvocar2) {
+			if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar2) * (quantosInvocou2)))) {
+				quantosInvocouTotal++;
+				quantosInvocou2++;
+				if (quantosInvocou2 % 4 == 0) {
+					inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 200) + largura, quantosInvocou2 * 6));
+				} else if (quantosInvocou2 % 3 == 0) {
+					inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, (float) (Math.random() * 100) - 200, quantosInvocou2 * 6));
+				} else if (quantosInvocou2 % 2 == 0) {
+					inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocou2 * 12, (float) (Math.random() * 100) - 200));
+				} else {
+					inimigos.add(new Inimigo((byte) 2, "inimigo2.png", 50, 50, quantosInvocou2 * 12, (float) (Math.random() * 200) + altura));
+				}
 			}
 		}
-		if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar3) * (quantosInvocou3)))) {
-			quantosInvocouTotal++;
-			quantosInvocou3++;
-			if (quantosInvocou3 % 2 == 0) {
-				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
-			} else {
-				inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
+		if (quantosInvocou3 < quantosInvocar3) {
+			if (frame == (tempoDesdeAUltimaHorda + ((int) (300 / quantosInvocar3) * (quantosInvocou3)))) {
+				quantosInvocouTotal++;
+				quantosInvocou3++;
+				if (quantosInvocou3 % 2 == 0) {
+					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
+				} else {
+					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
+				}
 			}
 		}
 		if (frame % 300 == 0) {
-			quantosInvocar += 6;
-			while (quantosInvocar > (30 * (int) (frame / 1500))) {
+			quantosInvocar += 5;
+			if(qualHorda % 3 == 0)
+			{
 				quantosInvocar2++;
-				quantosInvocar -= 15;
+				quantosInvocar -= 3;
 			}
-			while (quantosInvocar2 > 3 * (int) (frame / 1500)) {
-				quantosInvocar2 -= 2;
+			if(qualHorda % 7 == 0)
+			{
 				quantosInvocar3++;
+				quantosInvocar2--;
 			}
 			quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
 			quantosInvocouTotal = 0;
