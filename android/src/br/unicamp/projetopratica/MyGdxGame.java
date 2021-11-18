@@ -156,79 +156,79 @@ public class MyGdxGame implements Screen {
 
 	@Override
 	public void render(float delta) {
-				frame += 0.5;
+		frame += 0.5;
 
-				if (estado == "vivo") {
-					invocar();
-				}
+		if (estado == "vivo") {
+			invocar();
+		}
 
-				Gdx.gl.glClearColor(0, 0, 0, 1);
-				Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
-				camera.update();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+		camera.update();
 
+		batch.begin();
+		batch.draw(fundo, 0, 0, (int)largura, (int)altura);
+		scoreboard.setColor(1, 1, 1, 1);
+		scoreboard.getData().setScale(5);
+		scoreboard.draw(batch, pontuacao, 50, altura - 10);
+		batch.end();
+
+		if(estado != "morto" && estado != "morrendo") {
+			if(tempoDeEspera == 0) {
 				batch.begin();
-				batch.draw(fundo, 0, 0, (int)largura, (int)altura);
-				scoreboard.setColor(1, 1, 1, 1);
-				scoreboard.getData().setScale(5);
-				scoreboard.draw(batch, pontuacao, 50, altura - 10);
+				blockSprite.draw(batch);
+				tiro.draw(batch);
 				batch.end();
-
-				if(estado != "morto" && estado != "morrendo") {
-					if(tempoDeEspera == 0) {
-						batch.begin();
-						blockSprite.draw(batch);
-						tiro.draw(batch);
-						batch.end();
-						moverJogador();
-						moverCriaturas();
-					}
-					else
-					{
-						batch.begin();
-						blockSprite.draw(batch);
-						tiro.draw(batch);
-						for (Inimigo atual : inimigos) {
-							atual.getSpriteInimigo().draw(batch);
-						}
-						batch.end();
-					}
+				moverJogador();
+				moverCriaturas();
+			}
+			else
+			{
+				batch.begin();
+				blockSprite.draw(batch);
+				tiro.draw(batch);
+				for (Inimigo atual : inimigos) {
+					atual.getSpriteInimigo().draw(batch);
 				}
-				else
-				{
-					batch.begin();
-					for (Inimigo atual : inimigos) {
-						atual.getSpriteInimigo().draw(batch);
-					}
-					batch.end();
-				}
+				batch.end();
+			}
+		}
+		else
+		{
+			batch.begin();
+			for (Inimigo atual : inimigos) {
+				atual.getSpriteInimigo().draw(batch);
+			}
+			batch.end();
+		}
 
-				int posicaoAtual = -1;
-				int posicaoARemover = -1;
-				for(Explosao atual: explosoes)
-				{
-					posicaoAtual++;
-					if(!atual.animar(batch))
-					{
-						posicaoARemover = posicaoAtual;
-					}
-				}
+		int posicaoAtual = -1;
+		int posicaoARemover = -1;
+		for(Explosao atual: explosoes)
+		{
+			posicaoAtual++;
+			if(!atual.animar(batch))
+			{
+				posicaoARemover = posicaoAtual;
+			}
+		}
 
-				if (posicaoARemover != -1) {
-					explosoes.remove(posicaoARemover);
-				}
+		if (posicaoARemover != -1) {
+			explosoes.remove(posicaoARemover);
+		}
 
-				stage.act(Gdx.graphics.getDeltaTime());
-				stage.draw();
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
 
-				if(estado == "morrendo")
-				{
-					morrendo--;
-				}
+		if(estado == "morrendo")
+		{
+			morrendo--;
+		}
 
-				if(morrendo == 0)
-				{
-					estado = "morto";
-				}
+		if(morrendo == 0)
+		{
+			estado = "morto";
+		}
 
 		if(tempoDeEspera != 0)
 		{
@@ -356,16 +356,14 @@ public class MyGdxGame implements Screen {
 			}
 		}
 		if (frame % 300 == 0) {
-			quantosInvocar += 5;
-			if(qualHorda % 3 == 0)
+			quantosInvocar += 3;
+			if(qualHorda % 4 == 0)
 			{
 				quantosInvocar2++;
-				quantosInvocar -= 3;
 			}
 			if(qualHorda % 7 == 0)
 			{
 				quantosInvocar3++;
-				quantosInvocar2--;
 			}
 			quantosInvocarTotal = quantosInvocar + quantosInvocar2 + quantosInvocar3;
 			quantosInvocouTotal = 0;

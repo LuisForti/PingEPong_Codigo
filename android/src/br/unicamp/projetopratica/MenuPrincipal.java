@@ -26,8 +26,6 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.awt.Menu;
-
 public class MenuPrincipal implements Screen {
     private String estado = "nada";
     private float largura, altura;

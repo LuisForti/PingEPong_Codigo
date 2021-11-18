@@ -1,5 +1,7 @@
 package br.unicamp.projetopratica;
 
+import android.content.Context;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
@@ -10,9 +12,11 @@ public class TelaPrincipal extends Game {
     int tempo = 0;
     String estado;
     float largura, altura;
+    Context context;
 
-    public TelaPrincipal ()
+    public TelaPrincipal (Context contexto)
     {
+        this.context = contexto;
     }
 
     public void trocarParaMenu ()
@@ -56,7 +60,7 @@ public class TelaPrincipal extends Game {
         telaDeMorte = new TelaDeMorte();
         estado = "menu";
         telaMenu.setTamanho(largura, altura);
-        telaDeMorte.setTamanho(largura, altura);
+        telaDeMorte.setTamanho(largura, altura, context);
         setScreen(telaMenu);
         telaMenu.show();
     }
@@ -71,7 +75,7 @@ public class TelaPrincipal extends Game {
             }
             else if (telaMenu.qualOEstado() == "continuar")
             {
-                continuarJogo();
+                trocarParaMorte();
             }
         }
         else if(estado == "jogar")
