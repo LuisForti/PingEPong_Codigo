@@ -2,6 +2,7 @@ package br.unicamp.projetopratica;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -70,10 +72,10 @@ public class MyGdxGame implements Screen {
 
 	//Pausar
 	private Drawable fotoPausar;
-	private ImageButton btnPausar;
+	private Button btnPausar;
 	private int tempoDeEspera = 0;
 	private BitmapFont contagem;
-
+	Music explosao;
 
 	//Pontuação
 	private int score;
@@ -105,6 +107,9 @@ public class MyGdxGame implements Screen {
 		scoreboard = new BitmapFont();
 		contagem = new BitmapFont();
 		morrendo = 60;
+		explosao = Gdx.audio.newMusic(Gdx.files.internal("hit.mp3"));
+		explosao.setLooping(false);
+		explosao.setVolume(0.2F);
 	}
 
 	public void iniciar(){
@@ -112,20 +117,20 @@ public class MyGdxGame implements Screen {
 		inimigos = new LinkedList<>();
 		explosoes = new LinkedList<>();
 		//Create block sprite
-		blockTexture = new Texture(Gdx.files.internal("nave.png"));
+		blockTexture = new Texture(Gdx.files.internal("ping.png"));
 		blockSprite = new Sprite(blockTexture, 0, 0, 50, 50);
 		//Set position to centre of the screen
 		blockSprite.setPosition(largura/2-blockSprite.getWidth()/2, altura/2-blockSprite.getHeight()/2);
 		blockSprite.setScale(2);
 
-		blockTexture = new Texture(Gdx.files.internal("tiro.png"));
+		blockTexture = new Texture(Gdx.files.internal("pong.png"));
 		tiro = new Sprite(blockTexture, 0, 0, 50, 50);
 		//Set position to centre of the screen
 		tiro.setPosition(blockSprite.getX() + 300, blockSprite.getY());
 		tiro.setScale(2);
 
 		score = 0;
-		pontuacao = "score: 0";
+		pontuacao = "Pontuação: 0";
 	}
 
 	@Override
@@ -168,9 +173,6 @@ public class MyGdxGame implements Screen {
 
 		batch.begin();
 		batch.draw(fundo, 0, 0, (int)largura, (int)altura);
-		scoreboard.setColor(1, 1, 1, 1);
-		scoreboard.getData().setScale(5);
-		scoreboard.draw(batch, pontuacao, 50, altura - 10);
 		batch.end();
 
 		if(estado != "morto" && estado != "morrendo") {
@@ -246,15 +248,21 @@ public class MyGdxGame implements Screen {
 			}
 			tempoDeEspera--;
 		}
+
+		batch.begin();
+		scoreboard.setColor(1, 1, 1, 1);
+		scoreboard.getData().setScale(5);
+		scoreboard.draw(batch, pontuacao, 50, altura - 100);
+		batch.end();
 	}
 
 	public String getEstado()
 	{
 		return estado;
 	}
-	public String getPontos()
+	public int getPontos()
 	{
-		return pontuacao;
+		return score;
 	}
 
 	private void criarJoystics()
@@ -298,9 +306,9 @@ public class MyGdxGame implements Screen {
 	private void criarPause()
 	{
 		fotoPausar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pause.png"))));
-		btnPausar = new ImageButton(fotoPausar);
-		btnPausar.setPosition(largura / 2 - btnPausar.getWidth(), 100);
-		btnPausar.setSize(200,200);
+		btnPausar = new Button(fotoPausar);
+		btnPausar.setSize(100,100);
+		btnPausar.setPosition(largura - 200, altura - 200);
 		btnPausar.addListener(new InputListener(){
 			@Override
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -349,9 +357,9 @@ public class MyGdxGame implements Screen {
 				quantosInvocouTotal++;
 				quantosInvocou3++;
 				if (quantosInvocou3 % 2 == 0) {
-					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, -10, altura / 2));
+					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 51, 75, -10, altura / 2));
 				} else {
-					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 75, 75, largura, altura / 2));
+					inimigos.add(new Inimigo((byte) 3, "inimigo3.png", 51, 75, largura, altura / 2));
 				}
 			}
 		}
@@ -487,7 +495,7 @@ public class MyGdxGame implements Screen {
 				if (atual.getVida() <= 0) {
 					posicaoARemover = posicaoAtual;
 					score += qualHorda * 10 * atual.getVidaInicial();
-					pontuacao = "score: " + score;
+					pontuacao = "Pontuação: " + score;
 				}
 				posicaoAntigaX = atual.getCoordenadaX();
 				posicaoAntigaY = atual.getCoordenadaY();
@@ -504,6 +512,7 @@ public class MyGdxGame implements Screen {
 		}
 
 		if (posicaoARemover != -1) {
+			explosao.play();
 			explosoes.add(new Explosao(inimigos.get(posicaoARemover).getCoordenadaX(), inimigos.get(posicaoARemover).getCoordenadaY()));
 			inimigos.remove(posicaoARemover);
 		}

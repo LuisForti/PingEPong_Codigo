@@ -29,46 +29,33 @@ public class TelaDeMorte implements Screen {
 
     private int score;
     private String highestScore;
-    private String pontuacao;
     private BitmapFont scoreboard;
     private BitmapFont scoreboardHighScore;
 
-    private Drawable fotoJogar;
-    private Button btnJogar;
-    private Stage stage;
     private String estado;
 
-    private SQLiteDatabase bancoDados;
-    Context context;
+    private Texture fundo;
+    private Texture titulo;
+
+    private Context context;
 
     @Override
     public void show() {
         estado = "nada";
+        Create c = new Create(context);
+        c.createTable();
+        getDados();
+        fundo = new Texture(Gdx.files.internal("fundo.png"));
         scoreboard = new BitmapFont();
         scoreboardHighScore = new BitmapFont();
         batch = new SpriteBatch();
-        fotoJogar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("jogar.png"))));
-        btnJogar = new Button(fotoJogar);
-        btnJogar.setPosition(0, 0);
-        btnJogar.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                setRecorde();
-                estado = "salvo";
-                return true;
-            }
-        });
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-        btnJogar.setPosition(largura/2 + 200, altura/4 + 300);
-        btnJogar.setWidth(largura/4);
-        btnJogar.setHeight(largura/16);
-        stage.addActor(btnJogar);
-
-        Create c = new Create(context);
-        c.createTable();
-
-        getDados();
+        if(Integer.parseInt(highestScore) < score) {
+            titulo = new Texture(Gdx.files.internal("novo recorde.png"));
+        }
+        else
+        {
+            titulo = new Texture(Gdx.files.internal("fim de jogo.png"));
+        }
     }
 
     @Override
@@ -76,15 +63,19 @@ public class TelaDeMorte implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        scoreboard.setColor(0, 0, 0, 1);
+        batch.draw(fundo, 0, 0, (int) largura, (int) altura);
+        batch.draw(titulo, largura / 4, altura / 6, largura / 2, largura / 2);
+        scoreboard.setColor(1, 1, 1, 1);
         scoreboard.getData().setScale(5);
-        scoreboard.draw(batch, pontuacao, largura/3, altura/3);
-        scoreboardHighScore.setColor(0, 0, 0, 1);
+        scoreboard.draw(batch, "Pontuação: " + score, largura / 3, altura / 3 + 100);
+        scoreboardHighScore.setColor(1, 1, 1, 1);
         scoreboardHighScore.getData().setScale(5);
-        scoreboardHighScore.draw(batch, "HighScore: " + highestScore, largura/3, altura/3 + 200);
+        scoreboardHighScore.draw(batch, "Maior Pontuação: " + highestScore, largura / 3, altura / 4);
         batch.end();
-        stage.act();
-        stage.draw();
+        if (Gdx.input.isTouched()) { // is called whenever the finger is on screen touch
+            setRecorde();
+            estado = "salvo";
+        }
     }
 
     @Override
@@ -119,10 +110,9 @@ public class TelaDeMorte implements Screen {
         this.context = context;
     }
 
-    public void setPontos(String pontos)
+    public void setPontos(int pontos)
     {
-        pontuacao = pontos;
-        score = Integer.parseInt(pontuacao.substring(7));
+        score = pontos;
     }
 
     private void getDados()

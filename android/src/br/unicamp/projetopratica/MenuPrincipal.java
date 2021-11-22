@@ -60,7 +60,7 @@ public class MenuPrincipal implements Screen {
         btnComoJogar.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                estado = "continuar";
+                estado = "comoJogar";
                 return true;
             }
         });
@@ -74,7 +74,7 @@ public class MenuPrincipal implements Screen {
         btnComoJogar.setPosition(largura/2 + 200, altura/3);
         btnComoJogar.setWidth(largura/4);
         btnComoJogar.setHeight(largura/16);
-        //stage.addActor(btnComoJogar);
+        stage.addActor(btnComoJogar);
         batch = new SpriteBatch();
     }
 
