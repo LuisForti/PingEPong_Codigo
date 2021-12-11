@@ -27,24 +27,8 @@ public class Update extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int
             newVersion) {
     }
-    public boolean insertRecorde(Pontuacao p){
-        openDB();
-        try {
-            ContentValues cv = new ContentValues();
-            cv.put("ID",p.getId());
-            cv.put("PONTOS",p.getPontos());
-            db.insert(TABELA_RECORDES,null,cv);
-            return true;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        finally {
-            db.close();
-        }
-    }
-    public boolean updatePessoa(Pontuacao p){
+
+    public boolean updatePontuacao(Pontuacao p){
         openDB();
         try {
             String where = "ID=1";

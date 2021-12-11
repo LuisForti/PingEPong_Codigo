@@ -30,19 +30,15 @@ public class Read extends SQLiteOpenHelper{
             newVersion) {
     }
 
-    public ArrayList<Pontuacao> getPontuacao() {
+    public Pontuacao getPontuacao() {
         openDB();
-        ArrayList<Pontuacao> pArray = new ArrayList<>();
+        Pontuacao p = new Pontuacao();
         String getPontuacao = "select * from " + TABELA_RECORDES;
         try{
             Cursor c = db.rawQuery(getPontuacao,null);
-            if(c.moveToFirst()){
-                do{
-                    Pontuacao p = new Pontuacao();
-                    p.setId(c.getInt(0));
-                    p.setPontos(c.getInt(1));
-                    pArray.add(p);
-                } while(c.moveToNext());
+            if(c.moveToFirst()) {
+                p.setId(c.getInt(0));
+                p.setPontos(c.getInt(1));
                 c.close();
             }
         }
@@ -53,7 +49,7 @@ public class Read extends SQLiteOpenHelper{
         finally {
             db.close();
         }
-        return pArray;
+        return p;
     }
 
     @SuppressLint("WrongConstant")

@@ -30,8 +30,6 @@ public class TelaPrincipal extends Game {
     Music musica2;
     Music explosao;
 
-    private Stage stage;
-
     public TelaPrincipal (Context contexto)
     {
         this.context = contexto;
@@ -114,7 +112,6 @@ public class TelaPrincipal extends Game {
         musica2.setLooping(true);
         explosao = Gdx.audio.newMusic(Gdx.files.internal("explosao.mp3"));
         explosao.setLooping(false);
-        stage = new Stage();
         trocarParaMenu();
     }
 

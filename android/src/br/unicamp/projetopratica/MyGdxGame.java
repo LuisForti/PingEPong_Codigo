@@ -41,7 +41,6 @@ public class MyGdxGame implements Screen {
 	private Skin touchpadSkin2;
 	private Drawable touchBackground2;
 	private Drawable touchKnob2;
-	private Texture blockTexture2;
 	private Sprite blockSprite;
 	private float blockSpeed;
 
@@ -52,7 +51,6 @@ public class MyGdxGame implements Screen {
 	private float posicaoAntigaX = 0;
 	private float posicaoAntigaY = 0;
 	private LinkedList<Inimigo> inimigos;
-	private int rotacao;
 	private String estado = "vivo";
 	private byte morrendo = 60;
 
@@ -93,27 +91,7 @@ public class MyGdxGame implements Screen {
 		this.altura = altura;
 	}
 
-	@Override
-	public void show() {
-		batch = new SpriteBatch();
-		//Create camera
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 10f*largura / altura, 10f);
-
-		criarJoystics();
-		criarPause();
-
-		blockSpeed = 8;
-		scoreboard = new BitmapFont();
-		contagem = new BitmapFont();
-		morrendo = 60;
-		explosao = Gdx.audio.newMusic(Gdx.files.internal("hit.mp3"));
-		explosao.setLooping(false);
-		explosao.setVolume(0.2F);
-	}
-
 	public void iniciar(){
-		fundo = new Texture(Gdx.files.internal("fundo.png"));
 		inimigos = new LinkedList<>();
 		explosoes = new LinkedList<>();
 		//Create block sprite
@@ -134,6 +112,26 @@ public class MyGdxGame implements Screen {
 	}
 
 	@Override
+	public void show() {
+		fundo = new Texture(Gdx.files.internal("fundo.png"));
+		batch = new SpriteBatch();
+		//Create camera
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 10f*largura / altura, 10f);
+
+		criarJoystics();
+		criarPause();
+
+		blockSpeed = 8;
+		scoreboard = new BitmapFont();
+		contagem = new BitmapFont();
+		morrendo = 60;
+		explosao = Gdx.audio.newMusic(Gdx.files.internal("hit.mp3"));
+		explosao.setLooping(false);
+		explosao.setVolume(0.2F);
+	}
+
+	@Override
 	public void resize(int width, int height) {
 
 	}
@@ -151,7 +149,7 @@ public class MyGdxGame implements Screen {
 
 	@Override
 	public void hide() {
-		Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
+
 	}
 
 	@Override

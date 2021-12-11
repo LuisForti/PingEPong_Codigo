@@ -39,6 +39,26 @@ public class TelaDeMorte implements Screen {
 
     private Context context;
 
+    public void setTamanho(float largura, float altura, Context context)
+    {
+        this.largura = largura;
+        this.altura = altura;
+        this.context = context;
+    }
+
+    public void setPontos(int pontos)
+    {
+        score = pontos;
+    }
+
+    private void getDados()
+    {
+        Read r = new Read(context);
+        Pontuacao p1 = r.getPontuacao();
+
+        highestScore = Integer.toString(p1.getPontos());
+    }
+
     @Override
     public void show() {
         estado = "nada";
@@ -103,46 +123,13 @@ public class TelaDeMorte implements Screen {
 
     }
 
-    public void setTamanho(float largura, float altura, Context context)
-    {
-        this.largura = largura;
-        this.altura = altura;
-        this.context = context;
-    }
-
-    public void setPontos(int pontos)
-    {
-        score = pontos;
-    }
-
-    private void getDados()
-    {
-        Read r = new Read(context);
-        ArrayList<Pontuacao> pArray = r.getPontuacao();
-        ArrayList list = new ArrayList();
-        Pontuacao p1 = pArray.get(0);
-
-        System.out.println(p1.getId());
-        System.out.println(p1.getPontos());
-
-        highestScore = Integer.toString(p1.getPontos());
-    }
-
     public void setRecorde()
     {
         if(Integer.parseInt(highestScore) < score) {
             Pontuacao p = new Pontuacao();
             p.setPontos(score);
             Update u = new Update(context);
-            if (u.updatePessoa(p)) {
-                System.out.println("funcionou");
-            } else {
-                System.out.println("erro");
-            }
-        }
-        else
-        {
-            System.out.println("é menor seu palerma");
+            u.updatePontuacao(p);
         }
     }
 
